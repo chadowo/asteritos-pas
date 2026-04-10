@@ -30,6 +30,8 @@ begin
   if LSurface = nil then
   begin
     WriteLn('Unable to load image at path ', Path, 'SDL2_Image error: ', IMG_GetError);
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, 'Resource load error', IMG_GetError, nil);
+
     raise Exception.Create('Couldn''t create surface');
   end;
 
@@ -37,6 +39,8 @@ begin
   if FSDLTexture = nil then
   begin
     WriteLn('Unable create texture from ', Path, 'SDL2 error: ', SDL_GetError);
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, 'Resource load error', IMG_GetError, nil);
+
     raise Exception.Create('Couldn''t create texture');
   end;
 
