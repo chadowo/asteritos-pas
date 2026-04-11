@@ -2,7 +2,7 @@
 unit Window;
 
 interface
-uses SysUtils, SDL2, Image;
+uses SysUtils, SDL2, Image, Font;
 
 type
   TAsteritosWindow = class
@@ -13,7 +13,9 @@ type
 
     FShouldQuit: Boolean;
 
+    { Game resources }
     FBackground: TImage;
+    FFont: TFont;
   protected
 
   public
@@ -48,10 +50,12 @@ begin
   FShouldQuit := false;
 
   FBackground := TImage.Create('assets/sprites/bg.png', FRenderer);
+  FFont := TFont.Create('assets/fonts/nordine/nordine.ttf', 16);
 end;
 
 destructor TAsteritosWindow.Destroy;
 begin
+  FreeAndNil(FFont);
   FreeAndNil(FBackground);
 
   SDL_DestroyRenderer(FRenderer);
@@ -63,8 +67,16 @@ begin
 end;
 
 procedure TAsteritosWindow.Draw;
+var
+  White: TSDL_Color;
 begin
+  White.R := 255;
+  White.G := 255;
+  White.B := 255;
+  White.A := 255;
+
   FBackground.Draw(FRenderer);
+  FFont.Draw(32, 32, 'Hello World', White, FRenderer);
 end;
 
 procedure TAsteritosWindow.GameLoop;
