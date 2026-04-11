@@ -67,16 +67,9 @@ begin
 end;
 
 procedure TAsteritosWindow.Draw;
-var
-  White: TSDL_Color;
 begin
-  White.R := 255;
-  White.G := 255;
-  White.B := 255;
-  White.A := 255;
-
   FBackground.Draw(FRenderer);
-  FFont.Draw(32, 32, 'Hello World', White, FRenderer);
+  FFont.Draw(32, 32, 'Hello World', TFont.CColorWhite, FRenderer);
 end;
 
 procedure TAsteritosWindow.GameLoop;

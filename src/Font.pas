@@ -12,6 +12,12 @@ type
   protected
     FFont: PTTF_Font;
   public
+    const CColorWhite: TSDL_Color = (R: 255; G: 255; B: 255; A: 255);
+    const CColorBlack: TSDL_Color = (R: 0;   G: 0;   B: 0;   A: 255);
+    const CColorRed:   TSDL_Color = (R: 255; G: 0;   B: 0;   A: 255);
+    const CColorGreen: TSDL_Color = (R: 0;   G: 255; B: 0;   A: 255);
+    const CColorBlue:  TSDL_Color = (R: 0;   G: 0;   B: 250; A: 255);
+
     constructor Create(Path: String; Size: Integer);
     destructor Destroy; override;
 
