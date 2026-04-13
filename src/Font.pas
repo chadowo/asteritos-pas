@@ -21,6 +21,7 @@ type
     constructor Create(Path: String; Size: Integer);
     destructor Destroy; override;
 
+    function MeasureText(Text: String): Integer;
     procedure Draw(X, Y: Integer; Text: String; Color: TSDL_Color; Renderer: PSDL_Renderer);
   published
 
@@ -38,6 +39,17 @@ end;
 destructor TFont.Destroy;
 begin
   TTF_CloseFont(FFont);
+end;
+
+function TFont.MeasureText(Text: String): Integer;
+var
+  LSurface: PSDL_Surface;
+begin
+  LSurface := TTF_RenderUTF8_Blended(FFont, PChar(Text), CColorWhite);
+  Result := LSurface^.W;
+
+  SDL_FreeSurface(LSurface);
+  LSurface := nil;
 end;
 
 procedure TFont.Draw(X, Y: Integer; Text: String; Color: TSDL_Color; Renderer: PSDL_Renderer);
