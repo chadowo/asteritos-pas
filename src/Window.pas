@@ -2,7 +2,10 @@
 unit Window;
 
 interface
-uses SysUtils, SDL2, Image, Font;
+uses
+  SysUtils, Contnrs,
+  SDL2,
+  Image, Font, State, MenuState;
 
 type
   TAsteritosWindow = class
@@ -12,10 +15,9 @@ type
     FEvent: TSDL_Event;
 
     FShouldQuit: Boolean;
+    FTick: Integer;
 
-    { Game resources }
-    FBackground: TImage;
-    FFont: TFont;
+    FStates: TObjectStack;
   protected
 
   public
@@ -48,28 +50,39 @@ begin
   SDL_SetRenderDrawColor(FRenderer, $FF, $FF, $FF, $FF);
 
   FShouldQuit := false;
-
-  FBackground := TImage.Create('assets/sprites/bg.png', FRenderer);
-  FFont := TFont.Create('assets/fonts/nordine/nordine.ttf', 16);
+  FStates := TObjectStack.Create;
+  FStates.Push(TMenuState.Create(FRenderer));
 end;
 
 destructor TAsteritosWindow.Destroy;
+var
+  LState: TStateClass;
 begin
-  FreeAndNil(FFont);
-  FreeAndNil(FBackground);
+  LState := TStateClass(FStates.Pop);
+  FreeAndNil(LState);
+  FreeAndNil(FStates);
 
   SDL_DestroyRenderer(FRenderer);
   SDL_DestroyWindow(FWindow);
 end;
 
 procedure TAsteritosWindow.Update;
+var
+  CurrentState: TStateClass;
 begin
+  // TODO: Why do we need to cast to TStateClass? I'm sure there is a more correct way to do this.
+  CurrentState := TStateClass(FStates.Peek);
+  CurrentState.Update(0);
 end;
 
 procedure TAsteritosWindow.Draw;
+var
+  CurrentState: TStateClass;
 begin
-  FBackground.Draw(FRenderer);
-  FFont.Draw(32, 32, 'Hello World', TFont.CColorWhite, FRenderer);
+  Inc(FTick);
+
+  CurrentState := TStateClass(FStates.Peek);
+  CurrentState.Draw;
 end;
 
 procedure TAsteritosWindow.GameLoop;

@@ -4,7 +4,7 @@ require_relative 'rake/build_config'
 
 @default_build = BuildConfig.new('Linux-x86_64') do |conf|
   conf.files << 'src/Main.pas'
-  conf.include_dirs = %w(external/sdl2-pascal/)
+  conf.include_dirs = %w(src/states/ external/sdl2-pascal/)
 
   conf.out_filename = 'asteritos'
 end

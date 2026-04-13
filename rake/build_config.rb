@@ -17,11 +17,14 @@ class BuildConfig
   end
 
   def build
+    # The newlines are for readibility, the full command is a single line
+    command = "fpc #{@files.join(' ')} #{@flags.join(' ')} #{@include_dirs.each { |d| d.prepend('-Fu')}.join(' ')} -FUbuild/units -FEbuild/ -o#{@out_filename}"
+
     write_summary
-    puts "\n"
+    puts "Final command: #{command}"
 
     create_build_directory
-    system("fpc #{@files.join(' ')} #{@flags.join(' ')} -Fu#{@include_dirs.first} -FUbuild/units -FEbuild/ -o#{@out_filename} ")
+    system(command)
 
     self
   end
