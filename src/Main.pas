@@ -1,7 +1,7 @@
 {$mode ObjFPC}{$H+}
 program Asteritos;
 uses
-  SysUtils, SDL2, SDL2_Image, SDL2_TTF, Window;
+  SysUtils, SDL2, SDL2_Image, SDL2_TTF, Window, State;
 
 procedure InitSDL2;
 begin
@@ -29,10 +29,12 @@ begin
   begin
     WriteLn('Couldn''t initialize SDL2-TTF. Error: ', TTF_GetError);
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, 'SDL2-TTF initializing error', TTF_GetError, nil);
+    Halt(1);
   end;
 end;
 
 const
+  // TODO: This should be accessible anywhere
   CWindowWidth = 800;
   CWindowHeight = 600;
 var
@@ -43,17 +45,17 @@ begin
   InitSDL2TTF;
 
   try
-  	try
-	  	MyWindow := TAsteritosWindow.Create('Asteritos', CWindowWidth, CWindowHeight);
-  		MyWindow.GameLoop;
-  	except
-			on E: Exception do
-				SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, PChar(Format('An exception ocurred: %s', [E.ClassName])), PChar(Format('Message: %s', [E.Message])), nil);
-  	end;
-	finally
-  	FreeAndNil(MyWindow);
+    try
+      MyWindow := TAsteritosWindow.Create('Asteritos', CWindowWidth, CWindowHeight);
+      MyWindow.GameLoop;
+    except
+      on E: Exception do
+      SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, PChar(Format('An exception ocurred: %s', [E.ClassName])), PChar(Format('Message: %s', [E.Message])), nil);
+    end;
+  finally
+    FreeAndNil(MyWindow);
     TTF_Quit;
-  	IMG_Quit;
-  	SDL_Quit;
+    IMG_Quit;
+    SDL_Quit;
   end;
 end.
