@@ -50,7 +50,7 @@ begin
       MyWindow.GameLoop;
     except
       on E: Exception do
-      SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, PChar(Format('An exception ocurred: %s', [E.ClassName])), PChar(Format('Message: %s', [E.Message])), nil);
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, PChar(Format('An exception ocurred: %s', [E.ClassName])), PChar(Format('Message: %s', [E.Message])), nil);
     end;
   finally
     FreeAndNil(MyWindow);
