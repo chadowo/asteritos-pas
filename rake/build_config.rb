@@ -17,7 +17,6 @@ class BuildConfig
   end
 
   def build
-    # The newlines are for readibility, the full command is a single line
     command = "fpc #{@files.join(' ')} #{@flags.join(' ')} #{@include_dirs.each { |d| d.prepend('-Fu')}.join(' ')} -FUbuild/units -FEbuild/ -o#{@out_filename}"
 
     write_summary
