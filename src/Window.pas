@@ -1,11 +1,12 @@
-{$mode ObjFPC}{$H+}
 unit Window;
+
+{$mode ObjFPC}{$H+}
 
 interface
 uses
   SysUtils, Contnrs,
   SDL2,
-  Image, Font, State, MenuState;
+  Image, Font, State, GameState, MenuState;
 
 type
   TAsteritosWindow = class
@@ -18,16 +19,19 @@ type
     FTick: Integer;
 
     FStates: TObjectStack;
+
+    FMouseX, FMouseY: Integer;
   protected
 
   public
     constructor Create(Title: String; Width, Height: Integer);
     destructor Destroy; override;
 
-    procedure Update;
+    procedure Update(DeltaT: Single);
     procedure Draw;
 
-    { Starts the game loop, calling the update and draw methods }
+    { Starts the game loop, calling the update and draw methods.
+      The game ends when this method ends. }
     procedure GameLoop;
   published
 
@@ -51,7 +55,7 @@ begin
 
   FShouldQuit := false;
   FStates := TObjectStack.Create;
-  FStates.Push(TMenuState.Create(FRenderer));
+  FStates.Push(TGameState.Create(FRenderer));
 end;
 
 destructor TAsteritosWindow.Destroy;
@@ -66,13 +70,13 @@ begin
   SDL_DestroyWindow(FWindow);
 end;
 
-procedure TAsteritosWindow.Update;
+procedure TAsteritosWindow.Update(DeltaT: Single);
 var
   CurrentState: TStateClass;
 begin
   // TODO: Why do we need to cast to TStateClass? I'm sure there is a more correct way to do this.
   CurrentState := TStateClass(FStates.Peek);
-  CurrentState.Update(0);
+  CurrentState.Update(DeltaT);
 end;
 
 procedure TAsteritosWindow.Draw;
@@ -86,20 +90,46 @@ begin
 end;
 
 procedure TAsteritosWindow.GameLoop;
+{ We use variable step game logic for this }
+var
+  MinimumFPSDeltaTime, LastGameStep, Now, DeltaTime: Single;
 begin
+  MinimumFPSDeltaTime := 1000 div 6; // Minimum 6 FPS
+  LastGameStep := SDL_GetTicks;
+
   while not FShouldQuit do
   begin
+    // TODO: Events should be handled first and foremost, right?
     while (SDL_PollEvent(@FEvent) <> 0) do
       if FEvent.type_ = SDL_QUITEV then
         FShouldQuit := true;
+    SDL_GetMouseState(@FMouseX, @FMouseY);
 
-    Update;
+    Now := SDL_GetTicks;
+    if LastGameStep < Now then
+    begin
+      DeltaTime := Now - LastGameStep;
+      if DeltaTime > MinimumFPSDeltaTime then
+        DeltaTime := MinimumFPSDeltaTime; // We're going too fast for this 'ol computer
 
-    SDL_RenderClear(FRenderer);
-    Draw;
-    SDL_RenderPresent(FRenderer);
+      Update(DeltaTime);
 
-    SDL_Delay(2); // Don't eat the CPU
+      LastGameStep := Now;
+
+      SDL_RenderClear(FRenderer);
+      Draw;
+      SDL_RenderPresent(FRenderer);
+    end
+    else
+      SDL_Delay(1);
+
+    // Update;
+    //
+    // SDL_RenderClear(FRenderer);
+    // Draw;
+    // SDL_RenderPresent(FRenderer);
+    //
+    // SDL_Delay(2); // Don't eat the CPU
   end;
 end;
 
