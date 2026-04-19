@@ -8,9 +8,8 @@ uses
 type
   TFont = class
   private
-
-  protected
     FFont: PTTF_Font;
+    FSize: Integer;
   public
     const CColorWhite: TSDL_Color = (R: 255; G: 255; B: 255; A: 255);
     const CColorBlack: TSDL_Color = (R: 0;   G: 0;   B: 0;   A: 255);
@@ -23,6 +22,8 @@ type
 
     function MeasureText(Text: String): Integer;
     procedure Draw(X, Y: Integer; Text: String; Color: TSDL_Color; Renderer: PSDL_Renderer);
+
+    property Size: Integer read FSize;
   published
 
   end;
@@ -31,7 +32,8 @@ implementation
 
 constructor TFont.Create(Path: String; Size: Integer);
 begin
-  FFont := TTF_OpenFont(PChar(Path), Size);
+  FSize := Size;
+  FFont := TTF_OpenFont(PChar(Path), FSize);
   if FFont = nil then
     raise Exception.Create('Couldn''t create font');
 end;
@@ -70,6 +72,7 @@ begin
   SDL_QueryTexture(LTexture, nil, nil, @R.W, @R.H);
 
   SDL_RenderCopy(Renderer, LTexture, nil, @R);
+
   SDL_DestroyTexture(LTexture);
   LTexture := nil;
 end;
