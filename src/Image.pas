@@ -15,7 +15,7 @@ type
     constructor Create(Path: String; Renderer: PSDL_Renderer);
     destructor Destroy; override;
 
-    procedure Draw(Renderer: PSDL_Renderer);
+    procedure Draw(X, Y: Integer; Renderer: PSDL_Renderer);
   published
 
   end;
@@ -30,7 +30,6 @@ begin
   if LSurface = nil then
   begin
     WriteLn('Unable to load image at path ', Path, 'SDL2_Image error: ', IMG_GetError);
-    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, 'Resource load error', IMG_GetError, nil);
 
     raise Exception.Create('Couldn''t create surface');
   end;
@@ -52,9 +51,16 @@ begin
   SDL_DestroyTexture(FSDLTexture);
 end;
 
-procedure TImage.Draw(Renderer: PSDL_Renderer);
+procedure TImage.Draw(X, Y: Integer; Renderer: PSDL_Renderer);
+var
+  DestRect: TSDL_Rect;
 begin
-  SDL_RenderCopy(Renderer, FSDLTexture, nil, nil);
+
+  DestRect.X := X;
+  DestRect.Y := Y;
+  SDL_QueryTexture(FSDLTexture, nil, nil, @DestRect.W, @DestRect.H);
+
+  SDL_RenderCopy(Renderer, FSDLTexture, nil, @DestRect);
 end;
 
 end.
