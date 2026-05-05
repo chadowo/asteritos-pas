@@ -63,12 +63,8 @@ begin
 end;
 
 destructor TAsteritosWindow.Destroy;
-var
-  LState: TStateClass;
 begin
-  LState := FStates.Pop;
-  FreeAndNil(LState);
-  FreeAndNil(FStates);
+  FreeAndNil(FStates); // The object stack owns its items and will free them for us
 
   SDL_DestroyRenderer(FRenderer);
   SDL_DestroyWindow(FWindow);
