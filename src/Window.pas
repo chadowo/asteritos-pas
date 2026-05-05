@@ -4,11 +4,15 @@ unit Window;
 
 interface
 uses
-  SysUtils, Contnrs,
+  SysUtils, Generics.Collections,
   SDL2,
   Image, Font, State, GameState, MenuState;
 
 type
+  { A stack (last in, first out) of objects. In this case, a stack of
+    states. }
+  TStateStack = specialize TObjectStack<TStateClass>;
+
   TAsteritosWindow = class
   private
     FWindow: PSDL_Window;
@@ -18,7 +22,7 @@ type
     FShouldQuit: Boolean;
     FTick: Integer;
 
-    FStates: TObjectStack;
+    FStates: TStateStack;
 
     FMouseX, FMouseY: Integer;
   protected
@@ -54,7 +58,7 @@ begin
   SDL_SetRenderDrawColor(FRenderer, $FF, $FF, $FF, $FF);
 
   FShouldQuit := false;
-  FStates := TObjectStack.Create;
+  FStates := TStateStack.Create;
   FStates.Push(TGameState.Create(FRenderer));
 end;
 
@@ -62,7 +66,7 @@ destructor TAsteritosWindow.Destroy;
 var
   LState: TStateClass;
 begin
-  LState := TStateClass(FStates.Pop);
+  LState := FStates.Pop;
   FreeAndNil(LState);
   FreeAndNil(FStates);
 
@@ -74,8 +78,7 @@ procedure TAsteritosWindow.Update(DeltaT: Single);
 var
   CurrentState: TStateClass;
 begin
-  // TODO: Why do we need to cast to TStateClass? I'm sure there is a more correct way to do this.
-  CurrentState := TStateClass(FStates.Peek);
+  CurrentState := FStates.Peek;
   CurrentState.Update(DeltaT);
 end;
 
@@ -85,7 +88,7 @@ var
 begin
   Inc(FTick);
 
-  CurrentState := TStateClass(FStates.Peek);
+  CurrentState := FStates.Peek;
   CurrentState.Draw;
 end;
 
